@@ -1,15 +1,17 @@
 package com.falabella.entrevistaFalabella.model;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.stereotype.Component;
+
+
+@Component
 @Entity
-@Table(name = "Productos")
+@Table(name = "productos")
 public class Productos {
 	
 	@Id
@@ -66,7 +68,7 @@ public class Productos {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-
+	
 
 
 }
