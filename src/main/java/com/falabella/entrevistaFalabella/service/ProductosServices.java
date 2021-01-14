@@ -40,12 +40,17 @@ public class ProductosServices {
 	
 	public HttpStatus guardarTiposProductos(TiposProductos tipoProducto) {
 		//validamos si existe el nombre del producto antes de guardar
-		if(tiposRepo.getNombreByNombre_Producto(tipoProducto.getNombreProducto()).equals(tipoProducto.getNombreProducto())) {
+		
+		if(tiposRepo.getNombreByNombre_Producto(tipoProducto.getNombreProducto()) != null) {
+			if(tiposRepo.getNombreByNombre_Producto(tipoProducto.getNombreProducto()).equals(tipoProducto.getNombreProducto())) {
+				
+				return HttpStatus.NOT_ACCEPTABLE;
+			}
 			
-			return HttpStatus.NOT_ACCEPTABLE;
-		}
-		if(tiposRepo.save(tipoProducto) != null) {
-			return HttpStatus.CREATED;
+		}else {
+			if(tiposRepo.save(tipoProducto) != null) {
+				return HttpStatus.CREATED;
+			}
 		}
 		
 		return HttpStatus.NOT_ACCEPTABLE;
@@ -54,8 +59,10 @@ public class ProductosServices {
 	public Productos guardarProducto(Productos producto) throws ErrorCustom {
 		if(producto.getNombre().equals("Mega cobertura") && producto.getPrice() != 80) {
 			throw new ErrorCustom("El precio para 'Mega Cobertura' tiene que ser 80");
+		}else if(tiposRepo.getNombreByNombre_Producto(producto.getNombre()).equals(producto.getNombre())) {
+			return productosRepo.save(producto);	
 		}
-		return productosRepo.save(producto);
+		return null;
 	}
 
 
@@ -93,10 +100,14 @@ public class ProductosServices {
 		for(int i = 0; i < days; i++) {
 			for(Productos p: listaCompletaProductos) {
 				Productos productoActual = ProductosFactory.getProducto(p.getNombre());
-				productoActual = calculosProductosPorCobertura(i, p);
-				logSimulacion.add(productoActual);
-				log = "Dia  " + i + " producto " + productoActual.getNombre() + " price " + productoActual.getPrice() + " sellIn " + productoActual.getSellIn();
-				logsimulacionResumido.add(log);
+				if(productoActual != null) {
+					productoActual = calculosProductosPorCobertura(i, p);
+					logSimulacion.add(productoActual);
+					log = "Dia  " + i + " producto " + productoActual.getNombre() + " price " + productoActual.getPrice() + " sellIn " + productoActual.getSellIn();
+					logsimulacionResumido.add(log);
+				}
+				
+				
 					
 			}
 		}

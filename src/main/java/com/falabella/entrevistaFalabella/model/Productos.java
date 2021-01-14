@@ -15,12 +15,13 @@ import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
+
 @Entity
 @Table(name = "productos")
 public class Productos implements Serializable{
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)	
+	@GeneratedValue(strategy = GenerationType.AUTO)	
 	private Long id;
 	@Column(name = "nombre")
 	private String nombre;

@@ -1,6 +1,8 @@
 package com.falabella.entrevistaFalabella.model;
 
-public class ProductoFullCoberturaSuperDuper extends Productos {
+import java.io.Serializable;
+
+public class ProductoFullCoberturaSuperDuper extends Productos implements Serializable {
 	private static int tasaDeAumento = 1;
 	private static int tasaDeBaja = 1;
 	
