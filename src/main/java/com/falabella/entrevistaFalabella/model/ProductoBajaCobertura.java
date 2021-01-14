@@ -1,17 +1,25 @@
 package com.falabella.entrevistaFalabella.model;
 
-public class ProductoCobertura extends Productos {
-
+public class ProductoBajaCobertura extends Productos  {
+	
 	private static int tasaDeAumento = 1;
 	private static int tasaDeBaja = 1;
 	
-	public ProductoCobertura() {
+	
+	
+	public ProductoBajaCobertura() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public ProductoCobertura(String nombre, int sellIn, int price) {
+
+
+	public ProductoBajaCobertura(String nombre, int sellIn, int price) {
 		super(nombre, sellIn, price);
+		// TODO Auto-generated constructor stub
 	}
+
+
 
 	@Override
 	public Productos calculoReglas(Productos producto, int dia) {

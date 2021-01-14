@@ -8,8 +8,6 @@ import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
-
-@Component
 @Entity
 @Table(name = "productos")
 public class Productos {
@@ -67,6 +65,10 @@ public class Productos {
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+	
+	public Productos calculoReglas(Productos producto, int dia) {
+		return producto;
 	}
 	
 

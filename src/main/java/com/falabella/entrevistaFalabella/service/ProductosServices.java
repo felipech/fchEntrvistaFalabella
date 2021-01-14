@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.falabella.entrevistaFalabella.Errores.ErrorCustom;
 import com.falabella.entrevistaFalabella.dao.ProductosRepository;
+import com.falabella.entrevistaFalabella.model.ProductoCobertura;
 import com.falabella.entrevistaFalabella.model.Productos;
+import com.falabella.entrevistaFalabella.model.ProductosFactory;
 
 import javassist.NotFoundException;
 
@@ -21,7 +23,8 @@ public class ProductosServices {
 	private ProductosRepository productosRepo;
 	
 	@Autowired
-	private Productos productoActual;
+	private ProductosFactory prod;
+	
 	
 	private static int tasaDeAumento = 1;
 	
@@ -71,10 +74,11 @@ public class ProductosServices {
 		List<Productos> logSimulacion = new ArrayList<Productos>();
 		List<String> logsimulacionResumido = new ArrayList<>();
 		String log = "";
+		
 		for(int i = 0; i < days; i++) {
 			for(Productos p: listaCompletaProductos) {
-				
-				productoActual  = calculosProductosPorCobertura(i, p);
+				Productos productoActual = ProductosFactory.getProducto(p.getNombre());
+				productoActual = calculosProductosPorCobertura(i, p);
 				logSimulacion.add(productoActual);
 				log = "Dia  " + i + " producto " + productoActual.getNombre() + " price " + productoActual.getPrice() + " sellIn " + productoActual.getSellIn();
 				logsimulacionResumido.add(log);
@@ -91,115 +95,12 @@ public class ProductosServices {
 		//se asume que si no hay definicion en cuanto a la disminucion entonces se disminuye en 1
 		//necesito obtener el sell in y el price para ver en cuanto queda
 		//days seria el ultimo dia
-		
-		if(producto.getNombre().equals("Cobertura")) {
-			return calculoProductoCobertura(producto, diaActual);
-		}else if(producto.getNombre().equals("Full cobertura")) {
-			return calculoProductoFullCobertura(producto, diaActual);
-		}else if(producto.getNombre().equals("Baja cobertura")) {
-			return calculoProductoCobertura(producto, diaActual);
-		}else if(producto.getNombre().equals("Mega cobertura")) {
-			return calculoProductoMegaCobertura(producto, diaActual);
-		}else if(producto.getNombre().equals("Full cobertura super duper")) {
-			return calculoProductoFullCobertura(producto, diaActual);
-		}else if(producto.getNombre().equals("Super avance")) {
-			
-		}
-		
-		
-		
-		return null;
+		Productos prodd = ProductosFactory.getProducto(producto.getNombre());
+		return prodd.calculoReglas(producto, diaActual);
+
 	}
 	
-	/*
-	 *todos los productos pueden tener distintas reglas por eso se separan cada uno con su propia funcion 
-	 *para cada regla se podria tener configuraciones en tablas o archivos, y la logica quiza cambia por eso
-	 *no se junta todo en una solo funcion con multiples condiciones
-	 *Funcion para producto "Cobertura" o "Baja cobertura"
-	 * */
-	
-	public Productos calculoProductoCobertura(Productos producto, int dia) {
-		//Productos productoActualizado =  new Productos();
-		
-		double precioActualizado = 0;
-		if(dia != 0 && producto.getPrice() >= 0) {
-			if(producto.getSellIn() < 0) {
-				tasaDeBaja = tasaDeBaja * 2;
-			}
-			if((producto.getPrice() - tasaDeBaja) >= 0) {
-				precioActualizado = producto.getPrice() - tasaDeBaja;
-			}else {
-				precioActualizado = 0.0;
-			}
-			producto.setSellIn(producto.getSellIn() - tasaDeBaja);
-			producto.setPrice(precioActualizado);
-			return producto;
-		}
-		
-		return producto;
-	}
-	
-	/*
-	 * Funcion para producto FullCobertura o Full cobertura Super duper
-	 * */
-	public Productos calculoProductoFullCobertura(Productos producto, int dia) {
-		
-		
-		double precioActualizado = 0.0;
-		
-		//dia 0 dia inicial
-		if(dia != 0 && producto.getPrice() >= 0 && producto.getPrice() <= 100 && producto.getSellIn() > 0) {
-			
-			if(producto.getSellIn() <= 10 && producto.getSellIn() > 5) {
-				tasaDeAumento = tasaDeAumento + 1;
-			}else if(producto.getSellIn() <= 5 && producto.getSellIn() > 0) {
-				tasaDeAumento = tasaDeAumento + 2;
-			}
-			precioActualizado = producto.getPrice() + tasaDeAumento;
-			if(precioActualizado < 0) {
-				precioActualizado = 0;
-			}
-			producto.setPrice(precioActualizado);
-			producto.setSellIn(producto.getSellIn() - 1);
-		}else if(producto.getSellIn() == 0 && dia != 0) {
-			producto.setPrice(0.0);
-		}
-		
-		return producto;
-	}
-	
-	/*
-	 * Producto Super avance
-	 * */
-	public Productos calculoProductoSuperAvance(Productos producto, int dia) {
-		//Productos productoActualizado =  new Productos();
-		
-		double precioActualizado = 0;
-		
-		if(dia != 0 && producto.getPrice() >= 0) {
-			if(producto.getSellIn() < 0) {
-				tasaDeBaja = tasaDeBaja * 2;
-			}
-			if((producto.getPrice() - tasaDeBaja) >= 0) {
-				precioActualizado = producto.getPrice() - tasaDeBaja;
-			}else {
-				precioActualizado = 0.0;
-			}
-			producto.setSellIn(producto.getSellIn() - tasaDeBaja);
-			producto.setPrice(precioActualizado);
-			return producto;
-		}
-		
-		return producto;
-	}
-	
-	
-	public Productos calculoProductoMegaCobertura(Productos producto, int dia) {
-		
-		producto.setSellIn(producto.getSellIn() - 1);
-		return producto;
-		
-	}
+
 	
 	
 }
