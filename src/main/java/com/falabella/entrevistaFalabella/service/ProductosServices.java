@@ -64,7 +64,24 @@ public class ProductosServices {
 		}
 		return null;
 	}
-
+	
+	
+	public Productos actualizarProducto(Long id,Productos productoActualizado) throws NotFoundException {
+		return productosRepo.findById(id).map(producto -> {
+			producto.setNombre(productoActualizado.getNombre());
+			producto.setPrice(productoActualizado.getPrice());
+			producto.setSellIn(productoActualizado.getSellIn());
+			productosRepo.save(producto);
+			return producto;
+		}).orElseThrow(() -> new NotFoundException("Viajero no encontrado"));
+	}
+	
+	public String borrarProducto(Long id) throws NotFoundException {
+		return productosRepo.findById(id).map(producto -> {
+			productosRepo.delete(producto);
+			return "Producto Borrado";
+		}).orElseThrow(() -> new NotFoundException("Viajero no encontrado"));
+	}
 
 	public Productos getProducto(Long id) throws NotFoundException {
 		if(productosRepo.findById(id).isPresent()) {
