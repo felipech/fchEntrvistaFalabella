@@ -3,6 +3,7 @@ package com.falabella.entrevistaFalabella.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.falabella.entrevistaFalabella.Errores.ErrorCustom;
 import com.falabella.entrevistaFalabella.model.Productos;
+import com.falabella.entrevistaFalabella.model.TiposProductos;
 import com.falabella.entrevistaFalabella.service.ProductosServices;
 
 import javassist.NotFoundException;
@@ -25,13 +27,22 @@ public class ProductosController {
 	
 	@GetMapping("/test")
 	public String testController() {
-		
-		return "Test constroller";
+		return "Test controller";
+	}
+	
+	@GetMapping("/lista_Productos")
+	public List<TiposProductos> listaProductosDisponibles(){
+		return productosServ.obtenerTodosLosTiposProductosDisponibles();
+	}
+	
+	@PostMapping("/guardar/tipoProducto")
+	public HttpStatus guardarTipoProductoNuevo(@RequestBody TiposProductos tiposProductos) {
+		return productosServ.guardarTiposProductos(tiposProductos);
 	}
 	
 	@GetMapping("/all")
-	public List<Productos> obtenerProductos(){
-		return null;
+	public List<Productos> obtenerProductosVendidos(){
+		return productosServ.obtenerTodosLosProductosVendidos();
 	}
 	
 	@GetMapping("/obtener/{id}")
@@ -39,7 +50,7 @@ public class ProductosController {
 		return productosServ.getProducto(id);
 	}
 	
-	@PostMapping("/agregar")
+	@PostMapping("/vender")
 	public Productos guardarProducto(@RequestBody Productos productos) throws ErrorCustom {
 		
 		return productosServ.guardarProducto(productos);

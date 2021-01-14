@@ -6,13 +6,16 @@ import java.util.List;
 import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.falabella.entrevistaFalabella.Errores.ErrorCustom;
 import com.falabella.entrevistaFalabella.dao.ProductosRepository;
+import com.falabella.entrevistaFalabella.dao.TiposProductosRepository;
 import com.falabella.entrevistaFalabella.model.ProductoCobertura;
 import com.falabella.entrevistaFalabella.model.Productos;
 import com.falabella.entrevistaFalabella.model.ProductosFactory;
+import com.falabella.entrevistaFalabella.model.TiposProductos;
 
 import javassist.NotFoundException;
 
@@ -23,17 +26,30 @@ public class ProductosServices {
 	private ProductosRepository productosRepo;
 	
 	@Autowired
-	private ProductosFactory prod;
+	private TiposProductosRepository tiposRepo;
 	
 	
-	private static int tasaDeAumento = 1;
-	
-	private static int tasaDeBaja = 1;
-	
-	public List<Productos> obtenerTodosLosProductos(){
+	public List<Productos> obtenerTodosLosProductosVendidos(){
 		return productosRepo.findAll();
 	}
 	
+	
+	public List<TiposProductos> obtenerTodosLosTiposProductosDisponibles(){
+		return tiposRepo.findAll();
+	}
+	
+	public HttpStatus guardarTiposProductos(TiposProductos tipoProducto) {
+		//validamos si existe el nombre del producto antes de guardar
+		if(tiposRepo.getNombreByNombre_Producto(tipoProducto.getNombreProducto()).equals(tipoProducto.getNombreProducto())) {
+			
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		if(tiposRepo.save(tipoProducto) != null) {
+			return HttpStatus.CREATED;
+		}
+		
+		return HttpStatus.NOT_ACCEPTABLE;
+	}
 	
 	public Productos guardarProducto(Productos producto) throws ErrorCustom {
 		if(producto.getNombre().equals("Mega cobertura") && producto.getPrice() != 80) {
@@ -44,7 +60,6 @@ public class ProductosServices {
 
 
 	public Productos getProducto(Long id) throws NotFoundException {
-		// TODO Auto-generated method stub
 		if(productosRepo.findById(id).isPresent()) {
 			return productosRepo.findById(id).get();	
 		}else {
